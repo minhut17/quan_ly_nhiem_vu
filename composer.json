@@ -1,0 +1,16 @@
+{
+    "name": "minhnhut/php2_asm",
+    "description": "ASMPHP2",
+    "authors": [
+        {
+            "name": "minhnhut",
+            "email": "nhutlmpc05605@fpr.edu.vn"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "./App/"
+        }
+    }
+}
