@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Core\BaseRender;
+use App\Core\helper;
 use App\Models\Category;
 
 class CategoryController extends BaseController
@@ -38,103 +39,167 @@ class CategoryController extends BaseController
     function create()
     {
         if (isset($_POST['addCata'])) {
-            // var_dump($_POST);
-        $data = [
-            'caterory_name' => $_POST['createCata']
-        ];
-        $CreateCata = new Category;
-        $result = $CreateCata->create($data);
-        if ($result) {
-            header('location: ' . ROOT_URL . '?url=HomeController/homePage');
-        } else {
-            echo 'Hiện lỗi';
+        if(($_POST['createCata'])==!""){
+            $data = [
+                'caterory_name' => $_POST['createCata'],
+                'id_user'=>$_SESSION['user']['id']
+            ];
+            $CreateCata = new Category;
+            $result = $CreateCata->create($data);
+            if ($result) {
+                header('location: ' . ROOT_URL . '?url=CategoryController/list/');
+            } else {
+                echo 'Hiện lỗi';
+            }
+
+        }else{
+            $error = new helper;
+            $error->showError('dữ liệu không thể để trống', 'danger');
+            header('location: ' . ROOT_URL . '?url=CategoryController/list/');
+
         }
+       
     }
       
 
         
     }
-    function store()
-    {
-        if (isset($_POST['submit'])) {
-            // var_dump($_POST);
+    // function store()
+    // {
+    //     if (isset($_POST['submit'])) {
+    //         // var_dump($_POST);
 
-            $data = [
-                'name' => $_POST['name'],
-                'description' => $_POST['description'],
-                'status' => $_POST['status']
+    //         $data = [
+    //             'name' => $_POST['name'],
+    //             'description' => $_POST['description'],
+    //             'status' => $_POST['status']
 
-            ];
-            $category = new Category();
-            $result = $category->createCategory($data);
-            // var_dump($result);
-            if ($result) {
-                header('location: ' . ROOT_URL . '?url=CategoryController/index');
-            } else {
-                echo 'them loi';
-            }
-        } else {
-            echo 'ko submit';
-        }
-    }
+    //         ];
+    //         $category = new Category();
+    //         $result = $category->createCategory($data);
+    //         // var_dump($result);
+    //         if ($result) {
+    //             header('location: ' . ROOT_URL . '?url=CategoryController/index');
+    //         } else {
+    //             echo 'them loi';
+    //         }
+    //     } else {
+    //         echo 'ko submit';
+    //     }
+    // }
 
     function detail($id)
     {
-        
+        if (isset($_SESSION['user'])) {
+
+        $user_id = $_SESSION['user']['id'];
         $category = new Category();
-        $data = $category->getTasks($id);
+        $data = $category->getTasks($id,$user_id);
 
         // dữ liệu ở đây lấy từ repositories hoặc model
         $this->_renderBase->renderHeader();
         $this->_renderBase->renderSidebar();
         $this->load->render('layouts/pageCaterori', $data);
         $this->_renderBase->renderFooter();
+
+        } else {
+            $error = new helper;
+            $error->showError('Bạn chưa Đăng Nhập', 'warning');
+            header('location:' . ROOT_URL . '?url=HomeController/Login');
+        }
+       
     }
     function update($id)
     {
-        if (isset($_POST['submit'])) {
-            $name = $_POST['name'];
-            $status = $_POST['status'];
-            $description = $_POST['description'];
+     
+        $Category = new Category;
+        $data = $Category->getOne('id', $id);
+
+        if (isset($_POST['submitUpdateCate'])) {
+
+            $caterory_name = $_POST['caterory_name'];
+           
 
             $data = [
-                'name' => $name,
-                'status' => $status,
-                'description' => $description
+                'caterory_name' => $caterory_name,
             ];
-
-            $category = new Category();
-
-            $result = $category->updateCategory($id, $data);
+            $result = $Category->updateCategory($id, $data);
 
             if ($result) {
-                // $data = $category->getAllCategory();
-
-                // $this->load->render('admin/category/index', $data);
-                header('location: ' . ROOT_URL . '?url=CategoryController/index');
+                header('location: ' . ROOT_URL . '?url=CategoryController/list/' );
             } else {
-                var_dump('khong cap nhat');
+                echo ('khong cap nhat');
             }
-        } else {
-            var_dump('ko post');
         }
+        $this->_renderBase->renderHeader();
+        $this->_renderBase->renderSidebar();
+        $this->load->render('layouts/PageCateroriesDeail', $data);
+        $this->_renderBase->renderFooter();
+
     }
+    
     function delete($id)
-    {
-        $category = new Category();
-        $data = $category->deleteCategory($id);
+{
+    try {
+        $Category = new Category();
+        $data = $Category->deleteCategory($id);
 
-        // dữ liệu ở đây lấy từ repositories hoặc model
-        // $this->load->render('admin/category/detail', $data);
         if ($data) {
-            // $data = $category->getAllCategory();
-
-            // $this->_renderBase->renderHeader();
-            // $this->load->render('layouts/client/slider');
-            // $this->load->render('admin/category/index', $data);
-            header('location: ' . ROOT_URL . '?url=CategoryController/index');
+            $error = new helper;
+            $error->showError('Xóa thành công', 'success');
+            header('Location: ' . ROOT_URL . '?url=CategoryController/list');
+            exit(); // Đảm bảo không có đầu ra khác trước khi chuyển hướng
         } else {
-            echo 'Xoa loi';
+            $error = new helper;
+            $error->showError('Không thể xóa khi còn sản phẩm', 'error');
+            header('Location: ' . ROOT_URL . '?url=CategoryController/list');
+            // Có thể thực hiện xử lý khác tùy thuộc vào yêu cầu
         }
+    } catch (\Exception $e) {
+        if ($e->getCode() === '23000') {
+            // Xử lý lỗi khi có ràng buộc khóa ngoại
+            $errorMessage = "Lỗi: Không thể xóa vì vẫn còn các nhiệm vụ liên quan.";
+            
+        } else {
+            $errorMessage = "Lỗi: " . $e->getMessage();
+        }
+        $error = new helper;
+        $error->showError($errorMessage, 'danger');
+        header('Location: ' . ROOT_URL . '?url=CategoryController/list');
+        // Có thể thực hiện xử lý khác tùy thuộc vào yêu cầu
+    }
+}
+
+    public function search(){
+        // Lấy từ khóa tìm kiếm từ request
+       $key = isset($_POST['addCata']) ? $_POST['search_query'] : '';
+        
+        // Gọi phương thức tìm kiếm từ model
+        $Category = new Category();
+        $data= $Category->searchTasks($key);
+        // var_dump($data);
+        // die();
+
+        $this->_renderBase->renderHeader();
+        $this->_renderBase->renderSidebar();
+        $this->load->render('layouts/search', $data);
+        $this->_renderBase->renderFooter();
+        
+        
+         
+      
+    }
+    public function list(){
+        $id_user= $_SESSION['user']['id'];
+        $category = new Category();
+        $data = $category->getAllUserid($id_user);
+        $this->_renderBase->renderHeader();
+        $this->_renderBase->renderSidebar();
+
+        // $this->load->render('layouts/client/slider');
+        $this->load->render('layouts/PageCataroriesList',$data);
+        $this->_renderBase->renderFooter();
+
+
     }
 }

@@ -14,10 +14,14 @@ class Category extends BaseModel
     {
         return $this->getAll();
     }
-    public function getOneCategory($id)
+    public function getAllCategoryLimit($id_user)
     {
-        return $this->getOne($id);
+        return $this->getAllLimit($id_user);
     }
+    // public function getOneCategory($id)
+    // {
+    //     return $this->getOne($id);
+    // }
 
     public function updateCategory($id, $data)
     {
@@ -31,6 +35,9 @@ class Category extends BaseModel
 
     public function createCategory($data){
         return $this->create($data);
+    }
+    public function searchTasks($key){
+        return $this->searchTask($key);
     }
    
 }

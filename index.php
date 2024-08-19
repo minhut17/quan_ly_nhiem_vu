@@ -2,7 +2,16 @@
 session_start();
 require_once 'App/Core/helper.php';
 require_once 'vendor/autoload.php';
-define("ROOT_URL", "http://127.0.0.1:8000/");
+
+if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'){
+    $web_root = 'https://'.$_SERVER['HTTP_HOST'].'/';
+}else{
+    $web_root = 'http://'.$_SERVER['HTTP_HOST'].'/';
+}
+
+define('ROOT_URL',$web_root);
+
+
 
 // use App\Controllers\BaseController;
 // use App\Controllers\HomeController;

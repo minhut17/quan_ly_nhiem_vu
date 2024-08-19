@@ -1,3 +1,59 @@
 .container-fluid {
     overflow-x: hidden;
   }
+.form-bottom{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 82%;
+  padding: 10px;
+}
+.container-f {
+  position: relative;
+  height: 100%;
+
+}
+
+/* .list {
+  flex: 1;
+  overflow-y: auto;
+} */
+
+.fixed-input {
+  position: sticky;
+  bottom: 0;
+  padding: 10px;
+  
+}
+
+.bg-content{
+  background-image:url('../img/photo1.png');
+}
+.bg-secondary-grba{
+  background-color: rgba(255, 255, 255, 0.247); 
+}
+/* Đặt màu nền và màu chữ mặc định cho input */
+input {
+  background-color: rgba(255, 255, 255, 0.3); /* Màu nền mờ */
+  color: #000; /* Màu chữ đậm */
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* Đặt màu nền và màu chữ cho trạng thái focus */
+input:focus {
+  background-color: rgba(255, 255, 255, 0.3); /* Màu nền mờ khi focus */
+  color: #000; /* Màu chữ đậm khi focus */
+  outline: none; /* Xóa viền outline mặc định */
+  border-color: rgba(255, 255, 255, 0.7); /* Làm viền sáng hơn khi focus */
+}
+
+/* Đặt màu nền và màu chữ cho trạng thái active */
+input:active {
+  background-color: rgba(255, 255, 255, 0.3); /* Màu nền mờ khi active */
+  color: #000; /* Màu chữ đậm khi active */
+  border-color: rgba(255, 255, 255, 0.7); /* Làm viền sáng hơn khi active */
+}

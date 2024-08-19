@@ -19,13 +19,13 @@ class Render
      */
     public function render($file, $data = array())
     {
-        extract($data);
+        // extract($data);
         require 'App/Views/' . $file . '.php';
         $viewPath = __DIR__ . '/../Views/' .  $file . '.php';
 
         // kiểm tra file view có tồn tại không
         if (!file_exists($viewPath)) {
-            throw new Exception('Không tìm thấy view nha');
+            throw new Exception('404');
         }
     }
 
@@ -37,7 +37,7 @@ class Render
      */
     public function renderModel($file)
     {
-        require 'App/Models/' . $file . '.php';
+        require 'App/Models/'. $file . '.php';
         return new $file();
     }
 }

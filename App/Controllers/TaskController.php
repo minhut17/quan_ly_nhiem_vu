@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-session_start();
 
 use App\Controllers\BaseController;
 use App\Core\BaseRender;
@@ -26,7 +25,8 @@ class TaskController extends BaseController
     }
 
 
-    public function index(){
+    public function index()
+    {
         $this->_renderBase->renderHeader();
         $this->_renderBase->renderSidebar();
         $this->load->render('layouts/pageHome');
@@ -36,45 +36,44 @@ class TaskController extends BaseController
     {
         // dữ liệu ở đây lấy từ repositories hoặc model
         if (isset($_POST['addTask'])) {
-             echo $now = date("Y-m-d H:i:s");
-            
-           $task_name= $_POST['task_name'];
-           $dealine= $_POST['dealine'];
-           $catarogies_id= $_POST['catarogies_id'];
-          
-          
-            if($task_name =="" || $dealine =="" || $catarogies_id==""){
+
+            $now = date("Y-m-d H:i:s");
+            $task_name = $_POST['task_name'];
+            $dealine = $_POST['dealine'];
+            $catarogies_id = $_POST['catarogies_id'];
+
+
+            if ($task_name == "" || $dealine == "" || $catarogies_id == "") {
                 $error = new helper;
-                $error->showError('bạn không được bỏ trống','danger');
-                header('location:' . ROOT_URL . '?url=CategoryController/detail/'.$catarogies_id);
+                $error->showError('bạn không được bỏ trống', 'danger');
+                header('location:' . ROOT_URL . '?url=CategoryController/detail/' . $catarogies_id);
                 return;
-            }elseif($dealine < $now)
-            {
+            } elseif ($dealine < $now) {
                 $error = new helper;
-                $error->showError('thời gian không hợp lệ','warning');
-                header('location:' . ROOT_URL . '?url=CategoryController/detail/'.$catarogies_id);
+                $error->showError('thời gian không thể nhỏ hơn thời gian thực', 'warning');
+                header('location:' . ROOT_URL . '?url=CategoryController/detail/' . $catarogies_id);
                 return;
 
-            }else{
+            } else {
                 $data = [
                     'task_name' => $_POST['task_name'],
                     'task_status' => 0,
                     'deadline' => $_POST['dealine'],
                     'level' => 0,
-                    'caterory_id' => $_POST['catarogies_id']
+                    'caterory_id' => $_POST['catarogies_id'],
+                    'user_id' => $_SESSION['user']['id']
                 ];
-                $caterory_id= $data['caterory_id'];
+                $caterory_id = $data['caterory_id'];
                 $task = new Task();
                 $task->createtask($data);
-             header('location:'.ROOT_URL.'?url=CategoryController/detail/'.$caterory_id);
+                header('location:' . ROOT_URL . '?url=CategoryController/detail/' . $caterory_id);
 
             }
-            // var_dump($_POST);
 
-          
+
         }
-            // var_dump($result);
-            
+        // var_dump($result);
+
 
 
         // $this->_renderBase->renderHeader();
@@ -83,55 +82,77 @@ class TaskController extends BaseController
         // $this->_renderBase->renderFooter();
     }
     public function update($id)
-    {        
-        $cate =  $_SESSION['categoryId'];
+    {
+        $cate = $_SESSION['categoryId'];
         $task = new Task;
-        $data = $task->getOne($id);
-        
-        if(isset($_POST['submit'])){
-            
-                $Task_name = $_POST['Task_name'];
-                $task_status = $_POST['task_status'];
-                $deadline = $_POST['deadline'];
-                $level = $_POST['level'];
-    
-                $data = [
-                    'Task_name' => $Task_name,
-                    'task_status' => $task_status,
-                    'deadline' => $deadline,
-                    'level' => $level
-                ];
-    
-              
-    
-                $result = $task->updatetask($id, $data);
-    
-                if ($result) {
-                   
-                    header('location: ' . ROOT_URL . '?url=CategoryController/detail/'.$cate);
-                } else {
-                    echo ('khong cap nhat');
-                }
-            } 
+        $data = $task->getOne('id', $id);
+
+        if (isset($_POST['submit'])) {
+
+            $Task_name = $_POST['Task_name'];
+            $task_status = $_POST['task_status'];
+            $deadline = $_POST['deadline'];
+            $level = $_POST['level'];
+
+            $data = [
+                'Task_name' => $Task_name,
+                'task_status' => $task_status,
+                'deadline' => $deadline,
+                'level' => $level
+            ];
+
+
+
+            $result = $task->updatetask($id, $data);
+
+            if ($result) {
+
+                header('location: ' . ROOT_URL . '?url=CategoryController/detail/' . $cate);
+            } else {
+                echo ('khong cap nhat');
+            }
+        }
         $this->_renderBase->renderHeader();
         $this->_renderBase->renderSidebar();
-        $this->load->render('layouts/pageTaskdetail',$data);
+        $this->load->render('layouts/PageTaskdetail', $data);
         $this->_renderBase->renderFooter();
 
     }
     public function delete($id)
-    {        
-       
-        $cate =  $_SESSION['categoryId'];
-    
+    {
+        $cate = $_SESSION['categoryId'];
         $task = new Task();
         $data = $task->deletetask($id);
-    
-        if($data){
-            header('location:' . ROOT_URL . '?url=CategoryController/detail/'.$cate);
+
+        if ($data) {
+            $error = new helper;
+            $error->showError('Xóa thành công', 'success');
+
+            header('location:' . ROOT_URL . '?url=CategoryController/detail/' . $cate);
         }
 
     }
-    
+
+    public function updateStatusTask($id)
+    {
+        $task = new Task;
+        $cate = $_SESSION['categoryId'];
+        if (isset($_POST['submitTaskUpdateStatus'])) {
+
+            $data = $task->updateStatus($id);
+
+            if ($data) {
+                $error = new helper;
+                $error->showError('Hoàn thành nhiệm vụ', 'success');
+                header('location:' . ROOT_URL . '?url=CategoryController/detail/' . $cate);
+            }
+
+
+
+        }
+        ;
+
+    }
+
 
 }

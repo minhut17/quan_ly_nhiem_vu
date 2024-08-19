@@ -16,22 +16,13 @@ class BaseRender extends BaseController
         $this->load->render('componest/header');
     }
     public function renderSidebar(){
+        $id_user= $_SESSION['user']['id'];
         $category = new Category();
-        $data = $category->getAllCategory();
-
+        $data = $category->getAllCategoryLimit($id_user);
         // $this->_renderBase->renderHeader();
         // $this->load->render('layouts/client/slider');
         $this->load->render('componest/sidebar',$data);
     }
-
-    // public function renderAdminFooter(){
-    //     $this->load->render('layouts/admin/footer');
-    // }
-
-    // public function renderAdminHeader(){
-    //     $this->load->render('layouts/admin/header');
-    // }
-
     public function renderFooter(){
         $this->load->render('componest/footer');
     }

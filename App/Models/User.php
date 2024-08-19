@@ -1,11 +1,15 @@
 <?php
-
 namespace App\Models;
-
+use \PDO;
 
 
 class User extends BaseModel{
+
     
+    function __construct(){
+        parent::__construct();
+    }
+
     protected $table = 'users';
 
     
@@ -15,7 +19,7 @@ class User extends BaseModel{
     }
     public function getOneUser($id)
     {
-        return $this->getOne($id);
+        return $this->getOne('id',$id);
     }
 
     public function updateUser($id, $data)
@@ -33,7 +37,8 @@ class User extends BaseModel{
     }
     public function checkmail($user_email)
     {
-       return $this->checkmailn($user_email);
+    //    return $this->checkmailn($user_email);
+    return $this->getOne('user_email',$user_email);
     }
     public function getOTP($user_email){
         return $this->getOTPn($user_email);
@@ -42,4 +47,8 @@ class User extends BaseModel{
     public function resetPass($pass,$otp){
         return $this->resetPassn($pass,$otp);
     }
+    public function checkEmail($email){
+        return $this->getOne('user_email', $email);
+       
+}
 }

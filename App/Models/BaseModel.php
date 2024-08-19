@@ -23,8 +23,32 @@ abstract class BaseModel implements CrudInterface
     }
 
     public function getAll()
-    {
-        $this->_query = "SELECT * FROM $this->table ";
+    { 
+        $this->_query = "SELECT * FROM " . $this->table . " ORDER BY id DESC";
+
+        // return $this;
+
+        $stmt = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getAllLimit($userId)
+    {   $limit =7;
+        $this->_query = "SELECT * FROM " . $this->table . " WHERE id_user =" . $userId . " ORDER BY id DESC LIMIT " . $limit;
+
+
+        // return $this;
+
+        $stmt = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getAllUserid($userId)
+    {   
+        $this->_query = "SELECT * FROM " . $this->table . " WHERE id_user =" . $userId . " ORDER BY id DESC ";
+
 
         // return $this;
 
@@ -35,16 +59,21 @@ abstract class BaseModel implements CrudInterface
     }
 
 
-    public function getOne(int $id)
+    public function getOne(string $field, string|int $value)
     {
-        $this->_query = "SELECT * FROM $this->table WHERE id=$id";
-
+        $this->_query = "SELECT * FROM $this->table WHERE $field = '$value'";
         $stmt = $this->_connection->PdO()->prepare($this->_query);
-
-
         $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function searchTask($key)
+    {
+        $this->_query = "SELECT * FROM tasks WHERE task_name LIKE '%$key%'";
+        $stmt = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create(array $data)
@@ -70,14 +99,7 @@ abstract class BaseModel implements CrudInterface
     }
     public function update(int $id, array $data)
     {
-        // $data=[
-        //     'name'=> $name,
-        //     'status'=> $status,
-        //     'description'=> $description
-        // ];
-
-        // $this->_query = "UPDATE $this->table SET name='$name',status='$status' WHERE id=$id";
-
+       
 
         // tạo câu truy vấn
         $this->_query = "UPDATE $this->table SET ";
@@ -122,35 +144,49 @@ abstract class BaseModel implements CrudInterface
 
 
 
-    // public function orderBy(string $order = 'ASC')
-    // {
-    //     $this->_query = $this->_query . "order by " . $order;
+    public function orderBy(string $order = 'ASC')
+    {
+        $this->_query = $this->_query . "order by " . $order;
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
-    // public function get()
-    // {
-    //     $stmt   = $this->_connection->PdO()->prepare($this->_query);
-    //     $stmt->execute();
+    public function get()
+    {
+        $stmt   = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
 
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
-    // public function limit(int $limit = 10)
-    // {
-    //     $stmt   = $this->_connection->PdO()->prepare($this->_query);
-    //     $result = $stmt->execute();
+    public function limit(int $limit = 8)
+    {
+        $stmt   = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
 
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
-    public function getTasks($id)
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getTasks($id,$userId)
     {
         $this->_query = "SELECT tasks.*
         FROM tasks
         JOIN caterories ON tasks.caterory_id = caterories.id
-        WHERE caterories.id = $id";
+        WHERE caterories.id = $id
+        AND tasks.user_id = $userId";
+
+        $stmt = $this->_connection->PdO()->prepare($this->_query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function statisticalTask($id_user)
+    {
+        $this->_query = "SELECT COUNT(tasks.id) AS totalTask ,
+        SUM(CASE WHEN task_status = 1 THEN 1 ELSE 0 END) AS completed_tasks,
+        SUM(CASE WHEN level = 1 THEN 1 ELSE 0 END) AS priority_tasks
+        FROM tasks WHERE 
+        user_id =".$id_user;
 
         $stmt = $this->_connection->PdO()->prepare($this->_query);
         $stmt->execute();
@@ -174,9 +210,6 @@ abstract class BaseModel implements CrudInterface
 
         $stmt = $this->_connection->PdO()->prepare($this->_query);
         $stmt->bindParam(':email', $user_email);
-
-
-
         $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -204,7 +237,8 @@ abstract class BaseModel implements CrudInterface
 
     }
     public function resetPassn($pass, $otp)
-    {date_default_timezone_set('Asia/Ho_Chi_Minh');
+    {
+        date_default_timezone_set('Asia/Ho_Chi_Minh');
         $now = date("Y-m-d H:i:s");
         $this->_query = "SELECT * FROM users
          WHERE reset_token_hash=:reset_token_hash 
@@ -229,5 +263,10 @@ abstract class BaseModel implements CrudInterface
             return false;
         }
 
+    }
+    public function updateStatus($id){
+        $this->_query = "UPDATE $this->table SET task_status = 1 WHERE id=$id";
+        $stmt = $this->_connection->PdO()->prepare($this->_query);
+        return $stmt->execute();
     }
 }

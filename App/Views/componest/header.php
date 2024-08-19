@@ -15,13 +15,13 @@
   <link rel="stylesheet" href="../../public/assets/dist/css/adminlte.min.css">
   <link rel="stylesheet" href="../../public/assets/dist/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
   <!-- bootstrap css -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 function time() {
    var today = new Date();
    var weekday=new Array(7);
@@ -57,10 +57,10 @@ function time() {
       return i;
    }
 }
-</script>
+</script> -->
 
 </head>
-<body onload="time()" class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<body  class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
 
   <!-- Preloader -->
@@ -71,7 +71,8 @@ function time() {
     <!-- Left navbar links -->
     <div class="col-sm-6">
                     <h6 class="">Hôm Nay</h6>
-                    <div id="clock"></div>
+                    <!-- <div id="clock"></div> -->
+                    <?=$currentTime = date("d-m-Y");?>
                 </div>
 
     <!-- Right navbar links -->
@@ -110,9 +111,9 @@ function time() {
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
          
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
+          <a href="<?=ROOT_URL.'?url=UserController/userInfo'?>" class="dropdown-item">
             <i class="fas fa-users mr-2"></i> Xem thêm Thông Tin
-            <span class="float-right text-muted text-sm">12 hours</span>
+            <span class="float-right text-muted text-sm"></span>
           </a>
           <div class="dropdown-divider"></div>
           <a href="<?php echo ROOT_URL.'?url=HomeController/logout'?>" class="dropdown-item">

@@ -16,7 +16,7 @@ class Task extends BaseModel
     }
     public function getOnetask($id)
     {
-        return $this->getOne($id);
+        return $this->getOne('id',$id);
     }
 
     public function updatetask($id, $data)
@@ -32,5 +32,12 @@ class Task extends BaseModel
     public function createtask($data){
         return $this->create($data);
     }
+    public function thongKeNhiemVu($id_user){
+        return $this->statisticalTask($id_user);
+    }
+    public function updateStatusL($id){
+        return $this->updateStatus($id);
+    }
+
    
 }
